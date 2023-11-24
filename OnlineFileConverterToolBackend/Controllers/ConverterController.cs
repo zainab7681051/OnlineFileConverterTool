@@ -17,7 +17,9 @@ public class ConverterController : ControllerBase
 
     private readonly ILogger<ConverterController> _logger;
     private readonly CloudConvertAPI _cloudConvert;
-    private const long MaxFileSize = 10 * 1024 * 1024; // 10 MB limit
+    private const long MaxFileSize = 50 * 1024 * 1024; // 50 MB limit
+    private readonly string[] allowedExtensions = new[] { "pdf", "docx" };
+
     public ConverterController(ILogger<ConverterController> logger)
     {
         _logger = logger;
@@ -53,21 +55,19 @@ public class ConverterController : ControllerBase
             }
 
             // // Basic security measure: Check file size.
-            if (file.Length > 1024 * 1024) // 1 MB limit
+            if (file.Length > MaxFileSize)
             {
                 return BadRequest("File size exceeds the limit");
             }
 
             // // Basic security measure: Check file extension.
-            // var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-            // var fileExtension = Path.GetExtension(file.FileName).ToLower();
-            // if (!allowedExtensions.Contains(fileExtension))
-            // {
-            //     return BadRequest("Invalid file extension");
-            // }
+            var fileExtension = Path.GetExtension(file.FileName).ToLower();
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                return BadRequest("Invalid file extension");
+            }
 
-            // Process the file (save, database entry, etc.).
-            // For demonstration purposes, let's just return the file name.
+            //get file name and byte array of file 
             byte[] fileBytes;
             using MemoryStream ms = new();
             file.CopyTo(ms);
@@ -75,13 +75,16 @@ public class ConverterController : ControllerBase
             string fileName = file.FileName;
 
             _logger.LogInformation($"{fileName} was successfully uploaded");
-            // string filePath = "data-entry.pdf";
-            var job = await CreateJob("pdf", "docx");
 
+            //create API job
+            var job = await CreateJob("pdf", "docx");
+            //get upload specific task
             var uploadTask = job.Data.Tasks.FirstOrDefault(t => t.Name == "upload_my_file");
             if (uploadTask is null) throw new NullReferenceException();
+            //upload file as byte array 
             await _cloudConvert.UploadAsync(uploadTask.Result.Form.Url.ToString(), fileBytes, fileName, uploadTask.Result.Form.Parameters);
 
+            //export the uploaded file
             var ExFile = await ExportFile(job);
             Console.WriteLine($"Url: {ExFile.Url}\nName:{ExFile.Filename}");
             MyFile myFile = new() { Url = ExFile.Url, FileName = ExFile.Filename };
@@ -121,7 +124,7 @@ public class ConverterController : ControllerBase
     /// where T is <see cref="JobResponse"/>.
     /// </returns>
     /// <remarks>
-    /// The method creates a CloudConvert job with tasks for importing the file from the specified URL,
+    /// The method creates a CloudConvert job with tasks for importing the file,
     /// converting it to the desired output format, and exporting the converted file.
     /// </remarks>
     private async Task<Response<JobResponse>> CreateJob(string Input_Format, string Output_Format)
