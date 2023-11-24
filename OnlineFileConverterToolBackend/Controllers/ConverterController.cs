@@ -11,56 +11,39 @@ using OnlineFileConverterToolBackend;
 namespace New_Folder.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+// [Route("/api/v1/[controller]")]
 public class ConverterController : ControllerBase
 {
 
     private readonly ILogger<ConverterController> _logger;
     private readonly CloudConvertAPI _cloudConvert;
     private const long MaxFileSize = 50 * 1024 * 1024; // 50 MB limit
-    private readonly string[] allowedExtensions = new[] { "pdf", "docx" };
+    private readonly string[] allowedExtensions = new[] { ".pdf", ".docx" };
 
     public ConverterController(ILogger<ConverterController> logger)
     {
         _logger = logger;
+        //generate API key for cloud convert here: https://cloudconvert.com/dashboard/api/v2/keys
         _cloudConvert = new CloudConvertAPI(KeyToken.key);
     }
 
-    [HttpPost(Name = "PostUploadFile")]
-    public async Task<IActionResult> PostFile(IFormFile file)
+    [HttpPost("/api/v1/upload")]
+    public async Task<IActionResult> PostFile(IFormFile file, [FromQuery] string from, [FromQuery] string to)
     {
-
-        // Check if the request contains multipart/form-data.
-        if (!file.ContentType.StartsWith("multipart/form-data", StringComparison.OrdinalIgnoreCase))
+        Console.WriteLine($"file is: {file.GetType()}");
+        if (file == null || file.Length == 0)
         {
-            return BadRequest("Media type not supported");
+            return BadRequest("Invalid file");
         }
         try
         {
-            // var formCollection = await file.ReadFormAsync();
-
-            // // Access form data.
-            // foreach (var (key, value) in formCollection)
-            // {
-            //     // You can handle additional form data here.
-            //     Console.WriteLine($"{key}: {value}");
-            // }
-
-            // // Access file data.
-            // var file = formCollection.Files.FirstOrDefault();
-
-            if (file == null)
-            {
-                return BadRequest("No file received");
-            }
-
-            // // Basic security measure: Check file size.
+            // check file size.
             if (file.Length > MaxFileSize)
             {
                 return BadRequest("File size exceeds the limit");
             }
 
-            // // Basic security measure: Check file extension.
+            // check file extension.
             var fileExtension = Path.GetExtension(file.FileName).ToLower();
             if (!allowedExtensions.Contains(fileExtension))
             {
@@ -77,10 +60,12 @@ public class ConverterController : ControllerBase
             _logger.LogInformation($"{fileName} was successfully uploaded");
 
             //create API job
-            var job = await CreateJob("pdf", "docx");
+            var job = await CreateJob(from, to);
+
             //get upload specific task
             var uploadTask = job.Data.Tasks.FirstOrDefault(t => t.Name == "upload_my_file");
             if (uploadTask is null) throw new NullReferenceException();
+
             //upload file as byte array 
             await _cloudConvert.UploadAsync(uploadTask.Result.Form.Url.ToString(), fileBytes, fileName, uploadTask.Result.Form.Parameters);
 

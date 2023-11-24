@@ -18,56 +18,7 @@ Copy code
     </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue';
-
-const selectedFile = ref<File | null>(null);
-
-const handleFileChange = (event: Event) => {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0] || null;
-
-    if (file) {
-        selectedFile.value = file;
-    }
-};
-
-const formatFileSize = (size: number) => {
-    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    let index = 0;
-
-    while (size >= 1024 && index < units.length - 1) {
-        size /= 1024;
-        index++;
-    }
-
-    return `${size.toFixed(2)} ${units[index]}`;
-};
-
-const uploadFile = async () => {
-    if (selectedFile.value) {
-        const formData = new FormData();
-        formData.append('file', selectedFile.value);
-
-        try {
-            const response = await fetch('http://your-dotnet-api-endpoint', {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (response.ok) {
-                console.log('File uploaded successfully!');
-                // Add any additional handling for a successful upload
-            } else {
-                console.error('Failed to upload file');
-                // Handle error response from the server
-            }
-        } catch (error) {
-            console.error('Error uploading file:', error);
-        }
-    }
-};
-</script>
+<script src="./UploadFile.ts"></script>
 
 <style scoped>
 .upload-file {
