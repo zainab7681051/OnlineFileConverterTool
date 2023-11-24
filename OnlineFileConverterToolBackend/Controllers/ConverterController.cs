@@ -17,24 +17,25 @@ public class ConverterController : ControllerBase
 
     private readonly ILogger<ConverterController> _logger;
     private readonly CloudConvertAPI _cloudConvert;
+    private const long MaxFileSize = 10 * 1024 * 1024; // 10 MB limit
     public ConverterController(ILogger<ConverterController> logger)
     {
         _logger = logger;
         _cloudConvert = new CloudConvertAPI(KeyToken.key);
     }
 
-    [HttpPost(Name = "PostWeatherForecast")]
-    public async Task<ActionResult> PostFile()
+    [HttpPost(Name = "PostUploadFile")]
+    public async Task<IActionResult> PostFile(IFormFile file)
     {
-        // Check if the request contains multipart/form-data.
-        // if (!Request.ContentType.StartsWith("multipart/form-data", StringComparison.OrdinalIgnoreCase))
-        // {
-        //     return BadRequest("Media type not supported");
-        // }
 
+        // Check if the request contains multipart/form-data.
+        if (!file.ContentType.StartsWith("multipart/form-data", StringComparison.OrdinalIgnoreCase))
+        {
+            return BadRequest("Media type not supported");
+        }
         try
         {
-            // var formCollection = await Request.ReadFormAsync();
+            // var formCollection = await file.ReadFormAsync();
 
             // // Access form data.
             // foreach (var (key, value) in formCollection)
@@ -46,16 +47,16 @@ public class ConverterController : ControllerBase
             // // Access file data.
             // var file = formCollection.Files.FirstOrDefault();
 
-            // if (file == null)
-            // {
-            //     return BadRequest("No file received");
-            // }
+            if (file == null)
+            {
+                return BadRequest("No file received");
+            }
 
             // // Basic security measure: Check file size.
-            // if (file.Length > 1024 * 1024) // 1 MB limit
-            // {
-            //     return BadRequest("File size exceeds the limit");
-            // }
+            if (file.Length > 1024 * 1024) // 1 MB limit
+            {
+                return BadRequest("File size exceeds the limit");
+            }
 
             // // Basic security measure: Check file extension.
             // var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
@@ -67,14 +68,19 @@ public class ConverterController : ControllerBase
 
             // Process the file (save, database entry, etc.).
             // For demonstration purposes, let's just return the file name.
-            _logger.LogInformation("get");
-            string filePath = "data-entry.pdf";
+            byte[] fileBytes;
+            using MemoryStream ms = new();
+            file.CopyTo(ms);
+            fileBytes = ms.ToArray();
+            string fileName = file.FileName;
+
+            _logger.LogInformation($"{fileName} was successfully uploaded");
+            // string filePath = "data-entry.pdf";
             var job = await CreateJob("pdf", "docx");
 
             var uploadTask = job.Data.Tasks.FirstOrDefault(t => t.Name == "upload_my_file");
-            using Stream stream = System.IO.File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
             if (uploadTask is null) throw new NullReferenceException();
-            await _cloudConvert.UploadAsync(uploadTask.Result.Form.Url.ToString(), stream, filePath, uploadTask.Result.Form.Parameters);
+            await _cloudConvert.UploadAsync(uploadTask.Result.Form.Url.ToString(), fileBytes, fileName, uploadTask.Result.Form.Parameters);
 
             var ExFile = await ExportFile(job);
             Console.WriteLine($"Url: {ExFile.Url}\nName:{ExFile.Filename}");

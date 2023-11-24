@@ -1,14 +1,20 @@
+Copy code
 <template>
     <div class="upload-file">
-        <label for="fileInput" class="file-label">
-            <span>Choose a file</span>
-            <input type="file" id="fileInput" ref="fileInput" @change="handleFileChange" accept="*/*" />
-        </label>
+        <form @submit.prevent="uploadFile">
+            <label for="fileInput" class="file-label">
+                <span>Choose a file</span>
+                <input type="file" id="fileInput" ref="fileInput" @change="handleFileChange"
+                    accept=".jpg, .jpeg, .png, image/*" />
+            </label>
 
-        <div v-if="selectedFile" class="file-info">
-            <p>Selected File: {{ selectedFile.name }}</p>
-            <p>File Size: {{ formatFileSize(selectedFile.size) }}</p>
-        </div>
+            <div v-if="selectedFile" class="file-info">
+                <p>Selected File: {{ selectedFile.name }}</p>
+                <p>File Size: {{ formatFileSize(selectedFile.size) }}</p>
+            </div>
+
+            <button type="submit" :disabled="!selectedFile">Upload File</button>
+        </form>
     </div>
 </template>
 
@@ -36,6 +42,30 @@ const formatFileSize = (size: number) => {
     }
 
     return `${size.toFixed(2)} ${units[index]}`;
+};
+
+const uploadFile = async () => {
+    if (selectedFile.value) {
+        const formData = new FormData();
+        formData.append('file', selectedFile.value);
+
+        try {
+            const response = await fetch('http://your-dotnet-api-endpoint', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                console.log('File uploaded successfully!');
+                // Add any additional handling for a successful upload
+            } else {
+                console.error('Failed to upload file');
+                // Handle error response from the server
+            }
+        } catch (error) {
+            console.error('Error uploading file:', error);
+        }
+    }
 };
 </script>
 
