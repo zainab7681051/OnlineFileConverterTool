@@ -1,5 +1,5 @@
 var builder = WebApplication.CreateBuilder(args);
-
+var AllowSpecificOrigin = "_allowSpecificOrigin";
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -8,12 +8,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
         {
-            options.AddPolicy("AllowSpecificOrigin", builder =>
+            options.AddPolicy(name: AllowSpecificOrigin, builder =>
             {
                 builder
-                    .WithOrigins("http://localhost:5173/")
+                    .WithOrigins("http://localhost:5173")
                     .AllowAnyHeader()
-                    .AllowAnyMethod();
+                    .WithMethods("POST");
             });
         });
 
@@ -28,6 +28,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors(AllowSpecificOrigin);
 app.UseAuthorization();
 
 app.MapControllers();

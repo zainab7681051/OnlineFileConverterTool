@@ -3,18 +3,21 @@ const tag: string = "Upload";
 async function Convert(file: File, fromFormat: string, toFormat: string): Promise<any> {
     try {
         const formData = new FormData();
-        formData.append('from', fromFormat);
-        formData.append('to', toFormat);
+        // formData.append('from', fromFormat);
+        // formData.append('to', toFormat);
         formData.append('file', file)
+        // let headers = new Headers();
+        // headers.append('Accept', '*/*');
+        // headers.append('Content-Type', 'multipart/form-data')
 
         const requestOptions: RequestInit = {
             method: 'POST',
-            headers: {
-                'Accept': '*/*',
-            },
             body: formData,
+            mode: 'cors',
         };
-        const res = await fetchData(baseUrl + '/' + tag, requestOptions);
+        const param = "from=" + fromFormat + "&to=" + toFormat;
+        const url = baseUrl + '/' + tag + '?' + param;
+        const res = await fetchData(url, requestOptions);
         return res;
     } catch (error) {
         console.error(error);
