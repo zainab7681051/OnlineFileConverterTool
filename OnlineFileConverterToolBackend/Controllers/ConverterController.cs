@@ -11,7 +11,7 @@ using OnlineFileConverterToolBackend;
 namespace New_Folder.Controllers;
 
 [ApiController]
-// [Route("/api/v1/[controller]")]
+[Route("api/v1/[controller]/[action]")]
 public class ConverterController : ControllerBase
 {
 
@@ -27,16 +27,19 @@ public class ConverterController : ControllerBase
         _cloudConvert = new CloudConvertAPI(KeyToken.key);
     }
 
-    [HttpPost("/api/v1/upload")]
-    public async Task<IActionResult> PostFile(IFormFile file, [FromQuery] string from, [FromQuery] string to)
+    [HttpPost]
+    public async Task<IActionResult> Upload(IFormFile file, [FromQuery] string from, [FromQuery] string to)
     {
-        Console.WriteLine($"file is: {file.GetType()}");
-        if (file == null || file.Length == 0)
-        {
-            return BadRequest("Invalid file");
-        }
         try
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Please enter all required fields");
+            }
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("Invalid file");
+            }
             // check file size.
             if (file.Length > MaxFileSize)
             {
@@ -48,6 +51,11 @@ public class ConverterController : ControllerBase
             if (!allowedExtensions.Contains(fileExtension))
             {
                 return BadRequest("Invalid file extension");
+            }
+
+            if (fileExtension.TrimStart('.') != from)
+            {
+                return BadRequest("File extension does not match with the from field.");
             }
 
             //get file name and byte array of file 

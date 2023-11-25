@@ -1,11 +1,9 @@
-Copy code
 <template>
     <div class="upload-file">
         <form @submit.prevent="uploadFile">
             <label for="fileInput" class="file-label">
                 <span>Choose a file</span>
-                <input type="file" id="fileInput" ref="fileInput" @change="handleFileChange"
-                    accept=".jpg, .jpeg, .png, image/*" />
+                <input type="file" id="fileInput" ref="fileInput" @change="handleFileChange" />
             </label>
 
             <div v-if="selectedFile" class="file-info">
@@ -18,7 +16,54 @@ Copy code
     </div>
 </template>
 
-<script src="./UploadFile.ts"></script>
+<script lang="ts">
+import { Convert } from "../api/converterApi.ts"
+export default {
+    data() {
+        return {
+            selectedFile: null as File | null
+        };
+    },
+
+    methods: {
+        handleFileChange(event: Event) {
+            const input = event.target as HTMLInputElement;
+            const file = input.files?.[0] || null;
+
+            if (file) {
+                this.selectedFile = file;
+            }
+        },
+
+        formatFileSize(size: number) {
+            const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+            let index = 0;
+
+            while (size >= 1024 && index < units.length - 1) {
+                size /= 1024;
+                index++;
+            }
+
+            return `${size.toFixed(2)} ${units[index]}`;
+        },
+
+        async uploadFile() {
+            if (this.selectedFile) {
+                try {
+                    let res = await Convert(this.selectedFile, "pdf", "docx");
+                    console.log("response: ", res);
+
+                } catch (error) {
+                    console.error('Error uploading file:', error);
+                }
+            }
+        },
+    },
+
+    mounted() {
+    },
+};
+</script>
 
 <style scoped>
 .upload-file {

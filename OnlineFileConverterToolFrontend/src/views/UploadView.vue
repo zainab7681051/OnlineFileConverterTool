@@ -2,9 +2,13 @@
     <h1>Upload a file here</h1>
     <UploadFile />
 </template>
-<script setup lang="ts">
+
+<script lang="ts">
 import UploadFile from '../components/UploadFile.vue'
+export default {
+    data() { return {} },
+    components: { UploadFile }
+}
 </script>
     
-
 <style scoped></style>
