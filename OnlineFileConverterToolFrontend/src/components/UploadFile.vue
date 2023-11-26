@@ -50,14 +50,25 @@ export default {
         async uploadFile() {
             if (this.selectedFile) {
                 try {
-                    let res = await Convert(this.selectedFile, "pdf", "docx");
+                    let f: File = this.selectedFile;
+                    //this does not get .tar.gz abd the likes only .pdf and the likes
+                    const fileExt = (name: string): string => {
+                        const parts = name.split('.');
+                        if (parts.length > 1) {
+                            return parts.pop().toLowerCase();
+                        } else {
+                            // If no dot is found, there is no extension
+                            return '';
+                        }
+                    }
+                    let res = await Convert(f, fileExt.toString(), "docx");
                     console.log("response: ", res);
 
                 } catch (error) {
                     console.error('Error uploading file:', error);
                 }
             }
-        },
+        }
     },
 
     mounted() {

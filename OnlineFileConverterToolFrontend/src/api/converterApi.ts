@@ -1,14 +1,10 @@
 const baseUrl: string = "http://localhost:5111/api/v1/Converter"
 const tag: string = "Upload";
+
 async function Convert(file: File, fromFormat: string, toFormat: string): Promise<any> {
     try {
         const formData = new FormData();
-        // formData.append('from', fromFormat);
-        // formData.append('to', toFormat);
         formData.append('file', file)
-        // let headers = new Headers();
-        // headers.append('Accept', '*/*');
-        // headers.append('Content-Type', 'multipart/form-data')
 
         const requestOptions: RequestInit = {
             method: 'POST',
@@ -29,7 +25,7 @@ async function fetchData(apiUrl: string, requestOptions: RequestInit): Promise<a
         const response = await fetch(apiUrl, requestOptions);
 
         if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+            throw new Error(`Status: ${response.status} `);
         }
         const data = await response.json();
         return data;

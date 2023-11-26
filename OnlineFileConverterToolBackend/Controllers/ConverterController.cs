@@ -1,3 +1,4 @@
+//API credit has expire
 using CloudConvert.API;
 using CloudConvert.API.Models;
 using CloudConvert.API.Models.ExportOperations;
@@ -18,13 +19,12 @@ public class ConverterController : ControllerBase
     private readonly ILogger<ConverterController> _logger;
     private readonly CloudConvertAPI _cloudConvert;
     private const long MaxFileSize = 50 * 1024 * 1024; // 50 MB limit
-    private readonly string[] allowedExtensions = new[] { ".pdf", ".docx" };
 
     public ConverterController(ILogger<ConverterController> logger)
     {
         _logger = logger;
         //generate API key for cloud convert here: https://cloudconvert.com/dashboard/api/v2/keys
-        _cloudConvert = new CloudConvertAPI(KeyToken.key);
+        _cloudConvert = new CloudConvertAPI(FileExtensions.key);
     }
 
     [HttpPost]
@@ -47,13 +47,13 @@ public class ConverterController : ControllerBase
             }
 
             // check file extension.
-            var fileExtension = Path.GetExtension(file.FileName).ToLower();
-            if (!allowedExtensions.Contains(fileExtension))
+            var fileExtension = Path.GetExtension(file.FileName).ToLower().TrimStart('.');
+            if (!FileExtension.AllowedFileExtensions.Contains(fileExtension))
             {
                 return BadRequest("Invalid file extension");
             }
 
-            if (fileExtension.TrimStart('.') != from)
+            if (fileExtension != from)
             {
                 return BadRequest("File extension does not match with the from field.");
             }
