@@ -1,4 +1,3 @@
-//API credit has expire
 using CloudConvert.API;
 using CloudConvert.API.Models;
 using CloudConvert.API.Models.ExportOperations;
@@ -6,7 +5,6 @@ using CloudConvert.API.Models.ImportOperations;
 using CloudConvert.API.Models.JobModels;
 using CloudConvert.API.Models.TaskOperations;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using OnlineFileConverterToolBackend;
 
 namespace New_Folder.Controllers;
@@ -100,10 +98,17 @@ public class ConverterController : ControllerBase
     /// <exception cref="NullReferenceException">Thrown if the necessary information is not found in the CloudConvert job response.</exception>
     private async Task<CloudConvert.API.Models.TaskModels.TaskResultFile> ExportFile(Response<JobResponse> job)
     {
-        var job2 = await _cloudConvert.WaitJobAsync(job.Data.Id);
-        var exportTask = job2.Data.Tasks.FirstOrDefault() ?? throw new NullReferenceException();
-        var file = exportTask.Result.Files.FirstOrDefault() ?? throw new NullReferenceException();
-        return file;
+        try
+        {
+            var job2 = await _cloudConvert.WaitJobAsync(job.Data.Id);
+            var exportTask = job2.Data.Tasks.FirstOrDefault() ?? throw new NullReferenceException();
+            var file = exportTask.Result.Files.FirstOrDefault() ?? throw new NullReferenceException();
+            return file;
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
     }
 
     /// <summary>
@@ -122,25 +127,32 @@ public class ConverterController : ControllerBase
     /// </remarks>
     private async Task<Response<JobResponse>> CreateJob(string Input_Format, string Output_Format)
     {
-        return await _cloudConvert.CreateJobAsync(new JobCreateRequest
+        try
         {
-            Tasks = new
+            return await _cloudConvert.CreateJobAsync(new JobCreateRequest
             {
-                upload_my_file = new ImportUploadCreateRequest(),
-                convert = new ConvertCreateRequest
+                Tasks = new
                 {
-                    Input = "upload_my_file",
-                    Input_Format = Input_Format,
-                    Output_Format = Output_Format
+                    upload_my_file = new ImportUploadCreateRequest(),
+                    convert = new ConvertCreateRequest
+                    {
+                        Input = "upload_my_file",
+                        Input_Format = Input_Format,
+                        Output_Format = Output_Format
+                    },
+                    export = new ExportUrlCreateRequest
+                    {
+                        Input = "convert",
+                        Archive_Multiple_Files = true
+                    }
                 },
-                export = new ExportUrlCreateRequest
-                {
-                    Input = "convert",
-                    Archive_Multiple_Files = true
-                }
-            },
-            Tag = "Test"
-        });
+                Tag = "Test"
+            });
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
     }
 }
 
@@ -149,4 +161,3 @@ class MyFile
     public string FileName { get; set; }
     public Uri Url { get; set; }
 }
-
