@@ -51,18 +51,32 @@ export default {
             if (this.selectedFile) {
                 try {
                     let f: File = this.selectedFile;
-                    //this does not get .tar.gz abd the likes only .pdf and the likes
-                    const fileExt = (name: string): string => {
-                        const parts = name.split('.');
-                        if (parts.length > 1) {
-                            return parts.pop().toLowerCase();
+                    const fileExt = (filename: string): string => {
+                        const parts: string[] = filename.split('.');
+                        let l: number = parts.length;
+                        if (l > 1) {
+                            const lastPart: string = parts.pop().toLowerCase();
+
+                            if (l > 2) {
+                                const secondToLastPart: string = parts.pop();
+                                if (secondToLastPart === "tar") {
+                                    const TheParts: string[] = [secondToLastPart, lastPart];
+                                    return `${TheParts.join('.')}`;
+                                } else {
+                                    return "inavlid file type"
+                                }
+                            } else {
+                                return lastPart;
+                            }
                         } else {
-                            // If no dot is found, there is no extension
-                            return '';
+                            return 'inavlid file type';
                         }
                     }
-                    let res = await Convert(f, fileExt.toString(), "docx");
-                    console.log("response: ", res);
+                    let from = fileExt(f.name).toString();
+                    console.log(`file etx is : ${from}`)
+                    // let to = "docx";
+                    // let res = await Convert(f, from, to);
+                    // console.log("response: ", res);
 
                 } catch (error) {
                     console.error('Error uploading file:', error);
