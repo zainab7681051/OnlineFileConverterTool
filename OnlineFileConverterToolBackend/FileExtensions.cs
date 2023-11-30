@@ -2,7 +2,7 @@ namespace OnlineFileConverterToolBackend;
 
 public static class FileExtension
 {
-    public static string[] AllowedFileExtensions = new[]{
+    private readonly static string[] allowedFileExtensions = new[]{
     "7z",
     "ace",
     "alz",
@@ -298,4 +298,6 @@ public static class FileExtension
     "vob",
     "wtv"
 };
+
+    public static string[] AllowedFileExtensions { get => allowedFileExtensions; }
 }

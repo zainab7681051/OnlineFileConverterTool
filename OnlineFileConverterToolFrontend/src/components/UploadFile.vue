@@ -11,8 +11,10 @@
                 <p>File Size: {{ formatFileSize(selectedFile.size) }}</p>
             </div>
 
-            <button type="submit" :disabled="!selectedFile">Upload File</button>
+            <button class="btn1" type="submit" :disabled="!selectedFile">Upload File</button>
         </form>
+        <label id="error" class="error hidden"></label>
+        <button id="downloadBtn" class="btn1 hidden">Download File</button>
     </div>
 </template>
 
@@ -21,7 +23,8 @@ import { Convert } from "../api/converterApi.ts"
 export default {
     data() {
         return {
-            selectedFile: null as File | null
+            selectedFile: null as File | null,
+            result: null as any
         };
     },
 
@@ -48,38 +51,44 @@ export default {
         },
 
         async uploadFile() {
+            var downloadBtn = document.getElementById("downloadBtn");
+            var errorMessage = document.getElementById("error");
             if (this.selectedFile) {
-                try {
-                    let f: File = this.selectedFile;
-                    const fileExt = (filename: string): string => {
-                        const parts: string[] = filename.split('.');
-                        let l: number = parts.length;
-                        if (l > 1) {
-                            const lastPart: string = parts.pop().toLowerCase();
+                let f: File = this.selectedFile;
+                const fileExt = (filename: string): string => {
+                    const parts: string[] = filename.split('.');
+                    let l: number = parts.length;
+                    if (l > 1) {
+                        const lastPart: string = parts.pop().toLowerCase();
 
-                            if (l > 2) {
-                                const secondToLastPart: string = parts.pop();
-                                if (secondToLastPart === "tar") {
-                                    const TheParts: string[] = [secondToLastPart, lastPart];
-                                    return `${TheParts.join('.')}`;
-                                } else {
-                                    return "inavlid file type"
-                                }
+                        if (l > 2) {
+                            const secondToLastPart: string = parts.pop();
+                            if (secondToLastPart === "tar") {
+                                const TheParts: string[] = [secondToLastPart, lastPart];
+                                return `${TheParts.join('.')}`;
                             } else {
-                                return lastPart;
+                                return "inavlid file type"
                             }
                         } else {
-                            return 'inavlid file type';
+                            return lastPart;
                         }
+                    } else {
+                        return 'inavlid file type';
                     }
-                    let from = fileExt(f.name).toString();
-                    console.log(`file etx is : ${from}`)
-                    // let to = "docx";
-                    // let res = await Convert(f, from, to);
-                    // console.log("response: ", res);
-
-                } catch (error) {
+                }
+                let from = fileExt(f.name).toString();
+                console.log(`file etx is : ${from}`)
+                let to = "dddddddd";
+                let res = await Convert(f, from, to);
+                if (!res.ok) {
+                    let error = await res.text();
                     console.error('Error uploading file:', error);
+                    errorMessage.classList.remove("hidden");
+                    errorMessage.classList.add("shown")
+                    errorMessage.innerText = error;
+                } else {
+                    downloadBtn.classList.remove("hidden");
+                    downloadBtn.classList.add("shown");
                 }
             }
         }
@@ -96,6 +105,13 @@ export default {
     flex-direction: column;
     align-items: center;
     margin: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
 .file-label {
@@ -118,5 +134,17 @@ export default {
     text-align: center;
     font-size: 14px;
     color: #333;
+}
+
+input#fileInput {
+    scale: 0;
+}
+
+.btn1 {
+    margin-top: 25px;
+    width: 150px;
+    font-size: 21px;
+    border-radius: 10%;
+    height: 35px;
 }
 </style>

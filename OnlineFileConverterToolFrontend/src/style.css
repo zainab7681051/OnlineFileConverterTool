@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+body {
+    font-family: 'Lato', sans-serif;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+}
+
+.hidden {
+    scale: 0;
+}
+
+.shown {
+    scale: 1;
+}
+
+.error {
+    color: #c51a1a;
+}

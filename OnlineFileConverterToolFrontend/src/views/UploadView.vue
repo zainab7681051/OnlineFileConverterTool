@@ -11,4 +11,8 @@ export default {
 }
 </script>
     
-<style scoped></style>
+<style scoped>
+h1 {
+    align-self: center;
+}
+</style>
