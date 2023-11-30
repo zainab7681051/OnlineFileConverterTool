@@ -1,5 +1,6 @@
 <template>
-    <h1>Upload a file here</h1>
+    <h1>Upload a file here.</h1>
+    <h2>max size: 50 MB</h2>
     <UploadFile />
 </template>
 
@@ -13,6 +14,10 @@ export default {
     
 <style scoped>
 h1 {
+    align-self: center;
+}
+
+h2 {
     align-self: center;
 }
 </style>

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using CloudConvert.API;
 using CloudConvert.API.Models;
 using CloudConvert.API.Models.ExportOperations;
@@ -26,6 +27,7 @@ public class ConverterController : ControllerBase
     }
 
     [HttpPost]
+    [RequestSizeLimit(MaxFileSize)]
     public async Task<IActionResult> Upload(IFormFile file, [FromQuery] string from, [FromQuery] string to)
     {
         try
@@ -36,28 +38,29 @@ public class ConverterController : ControllerBase
             }
             if (file == null || file.Length == 0)
             {
-                return BadRequest("Invalid file");
+                return BadRequest(new { statusCode = 400, error = new { message = "inavlid file" } });
             }
             // check file size.
             if (file.Length > MaxFileSize)
             {
-                return BadRequest("File size exceeds the limit");
+                return BadRequest(new { statusCode = 400, error = new { message = "File size exceeds the limit" } });
             }
 
             // check file extension.
             var fileExtension = Path.GetExtension(file.FileName).ToLower().TrimStart('.');
             if (!FileExtension.AllowedFileExtensions.Contains(fileExtension))
             {
-                return BadRequest("Invalid file extension");
+                return BadRequest(new { statusCode = 400, error = new { message = "Invalid file extension" } });
             }
 
             if (fileExtension != from)
             {
-                return BadRequest("File extension does not match with the from field.");
+                return BadRequest(new { statusCode = 400, error = new { message = "File extension does not match with the 'from' field." } });
             }
-if(!FileExtension.AllowedFileExtensions.Contains(to)){
-return BadRequest("the 'to' field is invalid");
-}
+            if (!FileExtension.AllowedFileExtensions.Contains(to))
+            {
+                return BadRequest(new { statusCode = 400, error = new { message = "the 'to' field is invalid" } });
+            }
 
             //get file name and byte array of file 
             // byte[] fileBytes;
@@ -83,12 +86,15 @@ return BadRequest("the 'to' field is invalid");
             // Console.WriteLine($"Url: {ExFile.Url}\nName:{ExFile.Filename}");
             // MyFile myFile = new() { Url = ExFile.Url, FileName = ExFile.Filename };
 
-            return Ok(fileName);
+            return Ok(new MyFile { Url = null, FileName = fileName });
             // return Ok(myFile);
         }
         catch (Exception ex)
         {
-            return StatusCode(500, ex.Message);
+            var e = new { statusCode = 500, error = new { message = "something went wrong. could not process file" } };
+            _logger.LogWarning(e.error.message);
+            _logger.LogError(ex.Message);
+            return StatusCode(500, e);
         }
 
     }

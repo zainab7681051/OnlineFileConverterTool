@@ -67,7 +67,7 @@ export default {
                                 const TheParts: string[] = [secondToLastPart, lastPart];
                                 return `${TheParts.join('.')}`;
                             } else {
-                                return "inavlid file type"
+                                return lastPart;
                             }
                         } else {
                             return lastPart;
@@ -77,18 +77,20 @@ export default {
                     }
                 }
                 let from = fileExt(f.name).toString();
-                console.log(`file etx is : ${from}`)
-                let to = "dddddddd";
+                let to = "docx";
                 let res = await Convert(f, from, to);
+                this.result = await res.json();
                 if (!res.ok) {
-                    let error = await res.text();
-                    console.error('Error uploading file:', error);
+                    console.error('Error uploading file:', this.result.error.message);
                     errorMessage.classList.remove("hidden");
                     errorMessage.classList.add("shown")
-                    errorMessage.innerText = error;
+                    errorMessage.innerText = `Error Code ${res.status} : ${this.result.error.message}`;
                 } else {
                     downloadBtn.classList.remove("hidden");
                     downloadBtn.classList.add("shown");
+                    downloadBtn.addEventListener('click', () => {
+                        console.table(this.result)
+                    });
                 }
             }
         }
