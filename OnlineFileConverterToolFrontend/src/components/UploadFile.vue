@@ -6,12 +6,14 @@
                 <input type="file" id="fileInput" ref="fileInput" @change="handleFileChange" />
             </label>
 
-            <div v-if="selectedFile" class="file-info">
+            <div v-if="selectedFile" id="file-info" class="file-info">
                 <p>Selected File: {{ selectedFile.name }}</p>
                 <p>File Size: {{ formatFileSize(selectedFile.size) }}</p>
+                <p id="FileLimit" :class="FileSizeExceedsLimit ? 'shown error' : 'hidden'">FILE SIZE EXCEEDS LIMIT!!!</p>
             </div>
 
-            <button class="btn1" type="submit" :disabled="!selectedFile">Upload File</button>
+            <button id="convertBtn" class="btn1" type="submit" :disabled="!selectedFile || FileSizeExceedsLimit">Convert
+                File</button>
         </form>
         <label id="error" class="error hidden"></label>
         <button id="downloadBtn" class="btn1 hidden">Download File</button>
@@ -24,10 +26,10 @@ export default {
     data() {
         return {
             selectedFile: null as File | null,
-            result: null as any
+            result: null as any,
+            FileSizeExceedsLimit: false as boolean
         };
     },
-
     methods: {
         handleFileChange(event: Event) {
             const input = event.target as HTMLInputElement;
@@ -46,10 +48,12 @@ export default {
                 size /= 1024;
                 index++;
             }
-
-            return `${size.toFixed(2)} ${units[index]}`;
+            if (size > 50) {
+                this.FileSizeExceedsLimit = true;
+            }
+            let finalSize = size.toFixed(2);
+            return `${finalSize} ${units[index]}`;
         },
-
         async uploadFile() {
             var downloadBtn = document.getElementById("downloadBtn");
             var errorMessage = document.getElementById("error");
@@ -81,7 +85,7 @@ export default {
                 let res = await Convert(f, from, to);
                 this.result = await res.json();
                 if (!res.ok) {
-                    console.error('Error uploading file:', this.result.error.message);
+                    console.error('Error uploading file:', this.result);
                     errorMessage.classList.remove("hidden");
                     errorMessage.classList.add("shown")
                     errorMessage.innerText = `Error Code ${res.status} : ${this.result.error.message}`;
