@@ -63,31 +63,28 @@ public class ConverterController : ControllerBase
             }
 
             //get file name and byte array of file 
-            // byte[] fileBytes;
-            // using MemoryStream ms = new();
-            // file.CopyTo(ms);
-            // fileBytes = ms.ToArray();
+            byte[] fileBytes;
+            using MemoryStream ms = new();
+            file.CopyTo(ms);
+            fileBytes = ms.ToArray();
             string fileName = file.FileName;
-
-            _logger.LogInformation($"{fileName} was successfully uploaded");
+            _logger.LogInformation($"{DateTime.Now}:{fileName} was successfully uploaded");
 
             //create API job
-            // var job = await CreateJob(from, to);
+            var job = await CreateJob(from, to);
 
             //get upload specific task
-            // var uploadTask = job.Data.Tasks.FirstOrDefault(t => t.Name == "upload_my_file");
-            // if (uploadTask is null) throw new NullReferenceException();
+            var uploadTask = job.Data.Tasks.FirstOrDefault(t => t.Name == "upload_my_file");
+            if (uploadTask is null) throw new NullReferenceException();
 
             //upload file as byte array 
-            // await _cloudConvert.UploadAsync(uploadTask.Result.Form.Url.ToString(), fileBytes, fileName, uploadTask.Result.Form.Parameters);
+            await _cloudConvert.UploadAsync(uploadTask.Result.Form.Url.ToString(), fileBytes, fileName, uploadTask.Result.Form.Parameters);
 
             //export the uploaded file
-            // var ExFile = await ExportFile(job);
-            // Console.WriteLine($"Url: {ExFile.Url}\nName:{ExFile.Filename}");
-            // MyFile myFile = new() { Url = ExFile.Url, FileName = ExFile.Filename };
+            var ExFile = await ExportFile(job);
+            MyFile myFile = new() { Url = ExFile.Url, FileName = ExFile.Filename };
 
-            return Ok(new MyFile { Url = null, FileName = fileName });
-            // return Ok(myFile);
+            return Ok(myFile);
         }
         catch (Exception ex)
         {

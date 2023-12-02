@@ -93,7 +93,7 @@ export default {
                     downloadBtn.classList.remove("hidden");
                     downloadBtn.classList.add("shown");
                     downloadBtn.addEventListener('click', () => {
-                        console.table(this.result)
+                        window.open(this.result.Url, '_blank')
                     });
                 }
             }
