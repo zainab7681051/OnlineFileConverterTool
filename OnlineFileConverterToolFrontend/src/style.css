@@ -1,7 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
 
 :root {
-    --errorRed: #c51a1a
+    --errorRed: #c51a1a;
+    --borderGreen: #4caf50
 }
 
 body {
@@ -14,11 +15,11 @@ body {
 }
 
 .hidden {
-    scale: 0;
+    display: none;
 }
 
 .shown {
-    scale: 1;
+    display: block;
 }
 
 .error {

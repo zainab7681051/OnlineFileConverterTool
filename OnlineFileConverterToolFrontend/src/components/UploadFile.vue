@@ -48,9 +48,24 @@ export default {
                 size /= 1024;
                 index++;
             }
-            if (size > 50) {
-                this.FileSizeExceedsLimit = true;
-            }
+
+            if (index >= 2) {
+                switch (true) {
+                    case size > 50 && index === 2:
+                        console.log("here1");
+                        this.FileSizeExceedsLimit = true;
+                        break;
+
+                    case (size > 50 || size < 50) && index > 2:
+                        console.log("here2");
+                        this.FileSizeExceedsLimit = true;
+                        break;
+
+                    default:
+                        this.FileSizeExceedsLimit = false;
+                        break;
+                }
+            } else { this.FileSizeExceedsLimit = false }
             let finalSize = size.toFixed(2);
             return `${finalSize} ${units[index]}`;
         },
@@ -90,10 +105,13 @@ export default {
                     errorMessage.classList.add("shown")
                     errorMessage.innerText = `Error Code ${res.status} : ${this.result.error.message}`;
                 } else {
+                    errorMessage.classList.remove("shown")
+                    errorMessage.classList.add("hidden");
                     downloadBtn.classList.remove("hidden");
                     downloadBtn.classList.add("shown");
                     downloadBtn.addEventListener('click', () => {
-                        window.open(this.result.Url, '_blank')
+                        console.log(this.result)
+                        window.open(this.result.url, '_blank')
                     });
                 }
             }
@@ -132,7 +150,7 @@ form {
 }
 
 .file-label:hover {
-    border-color: #4caf50;
+    border-color: var(--borderGreen);
 }
 
 .file-info {
@@ -150,7 +168,13 @@ input#fileInput {
     margin-top: 25px;
     width: 150px;
     font-size: 21px;
-    border-radius: 10%;
+    border-radius: 8px;
     height: 35px;
+    cursor: pointer;
+    transition: border-color 0.3s ease-in-out;
+}
+
+.btn1:hover:not(:disabled) {
+    background: var(--borderGreen);
 }
 </style>
