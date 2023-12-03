@@ -11,9 +11,30 @@
                 <p>File Size: {{ formatFileSize(selectedFile.size) }}</p>
                 <p id="FileLimit" :class="FileSizeExceedsLimit ? 'shown error' : 'hidden'">FILE SIZE EXCEEDS LIMIT!!!</p>
             </div>
+            <div class="searchable-select">
+                <label for="searchSelect">Choose Format:</label>
 
+                <!-- Input for searching -->
+                <input v-model="searchQuery" @input="filterOptions" type="text" id="searchSelect"
+                    placeholder="Search or select a format" />
+
+                <!-- Select dropdown -->
+                <select v-model="selectedFormat" id="selectOptions">
+                    <option>{{ nullVal }}</option>
+                    <option v-for="(format, index) in filteredOptions" :key="index" :value="format">{{ format }}</option>
+                </select>
+
+            </div>
+            <button id="convertBtn" class="btn1" type="submit"
+                :disabled="(!selectedFile || !selectedFormat) || FileSizeExceedsLimit" @click="uploadFile">
+                Convert File
+            </button>
+            <!-- <label for="toSelect">Choose Format:</label>
+            <model-select id="toSelect" v-model="selectedFormat" :options="supportedFormats"
+                placeholder="Search or select a format">
+            </model-select>
             <button id="convertBtn" class="btn1" type="submit" :disabled="!selectedFile || FileSizeExceedsLimit">Convert
-                File</button>
+                File</button> -->
         </form>
         <label id="error" class="error hidden"></label>
         <button id="downloadBtn" class="btn1 hidden">Download File</button>
@@ -22,13 +43,29 @@
 
 <script lang="ts">
 import { Convert } from "../api/converterApi.ts"
+import { allFormats } from "../api/allFormats.ts"
 export default {
     data() {
         return {
             selectedFile: null as File | null,
             result: null as any,
-            FileSizeExceedsLimit: false as boolean
+            FileSizeExceedsLimit: false as boolean,
+            selectedFormat: null as string,
+            supportedFormats: allFormats as string[],
+            searchQuery: "" as string,
+            FilteredFormats: null as string[],
+            nullVal: null as null
         };
+    },
+    components: {},
+    computed: {
+        filteredOptions() {
+            this.FilteredFormats = this.supportedFormats.filter(
+                (format: string) =>
+                    format.toLowerCase().includes(this.searchQuery.toLowerCase())
+            );
+            return this.FilteredFormats
+        },
     },
     methods: {
         handleFileChange(event: Event) {
@@ -52,12 +89,10 @@ export default {
             if (index >= 2) {
                 switch (true) {
                     case size > 50 && index === 2:
-                        console.log("here1");
                         this.FileSizeExceedsLimit = true;
                         break;
 
                     case (size > 50 || size < 50) && index > 2:
-                        console.log("here2");
                         this.FileSizeExceedsLimit = true;
                         break;
 
@@ -95,9 +130,9 @@ export default {
                         return 'inavlid file type';
                     }
                 }
-                let from = fileExt(f.name).toString();
-                let to = "docx";
-                let res = await Convert(f, from, to);
+                let from: string = fileExt(f.name).toString();
+                let to: string = this.selectedFormat;
+                let res: Response = await Convert(f, from, to);
                 this.result = await res.json();
                 if (!res.ok) {
                     console.error('Error uploading file:', this.result);
@@ -110,11 +145,13 @@ export default {
                     downloadBtn.classList.remove("hidden");
                     downloadBtn.classList.add("shown");
                     downloadBtn.addEventListener('click', () => {
-                        console.log(this.result)
                         window.open(this.result.url, '_blank')
                     });
                 }
             }
+        },
+        filterOptions() {
+            this.selectedFormat = this.searchQuery ? this.FilteredFormats[0] : this.nullVal;
         }
     },
 
@@ -170,8 +207,11 @@ input#fileInput {
     font-size: 21px;
     border-radius: 8px;
     height: 35px;
-    cursor: pointer;
     transition: border-color 0.3s ease-in-out;
+}
+
+.btn1:not(:disabled) {
+    cursor: pointer;
 }
 
 .btn1:hover:not(:disabled) {
