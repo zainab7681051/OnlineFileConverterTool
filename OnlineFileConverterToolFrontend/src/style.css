@@ -2,7 +2,8 @@
 
 :root {
     --errorRed: #c51a1a;
-    --borderGreen: #4caf50
+    --borderGreen: #4caf50;
+    --bg-color: #fff
 }
 
 body {
@@ -24,4 +25,6 @@ body {
 
 .error {
     color: var(--errorRed);
+    font-weight: 700;
+    font-size: 20px;
 }

@@ -1,0 +1,93 @@
+.upload-file {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.file-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px;
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    transition: all 0.3s ease-in-out;
+}
+
+.file-label:hover {
+    border-color: var(--borderGreen);
+    scale: 1.2
+}
+
+.file-info {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 18px;
+    color: #333;
+}
+
+input#fileInput {
+    scale: 0;
+}
+
+.btn1 {
+    margin-top: 25px;
+    width: 150px;
+    font-size: 21px;
+    border-radius: 8px;
+    height: 35px;
+    transition: border-color 0.3s ease-in-out;
+}
+
+.btn1:not(:disabled) {
+    cursor: pointer;
+}
+
+.btn1:hover:not(:disabled) {
+    background: var(--borderGreen);
+}
+
+.searchable-select {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 1rem;
+}
+
+.searchable-select label {
+    margin: .5rem
+}
+
+#searchSelect {
+    margin: .5rem;
+    background-color: var(--bg-color);
+    width: 10rem;
+    line-height: 18px;
+    font-size: 18px;
+    text-align: center;
+    border-width: 0 0 2px 0;
+    border-style: none none solid none;
+    padding: 4px 8px 4px 8px;
+    outline: 0;
+    transition: all 0.5s ease;
+}
+
+#searchSelect:focus-visible {
+    border-bottom-style: 4px;
+    border-bottom-color: var(--borderGreen);
+}
+
+#selectOptions {
+    margin-top: .5rem;
+    width: 4rem;
+    border-radius: 2px;
+}

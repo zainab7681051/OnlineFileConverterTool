@@ -1,4 +1,4 @@
-export const allFormats = ["7z",
+export const allFormats: string[] = ["7z",
     "ace",
     "alz",
     "arc",
