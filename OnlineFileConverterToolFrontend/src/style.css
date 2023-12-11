@@ -2,12 +2,18 @@
 
 :root {
     --errorRed: #c51a1a;
-    --borderGreen: #4caf50;
-    --bg-color: #fff
+    --border-color: #9c94ad;
+    --bg-color: #011c2e;
+    --light-yellow:#ffebb8;
+    --yellow:#f5c600;
+    --light-blue:#9ab7cb;
+    --sec-bg-color:#053b61;
 }
 
 body {
     font-family: 'Lato', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--light-yellow);
 }
 
 #app {
@@ -16,15 +22,29 @@ body {
 }
 
 .hidden {
-    display: none;
+    scale: 0;
 }
 
 .shown {
-    display: block;
+    scale: 1;
 }
 
 .error {
     color: var(--errorRed);
     font-weight: 700;
     font-size: 20px;
+    display: flex;
+    border-style: solid;
+    border-color: var(--errorRed);
+    height: 8rem;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    position: absolute;
+    background-color: var(--light-blue);
+    top: 51%;
+    left: 31%;
+    transition: all 0.5s ease-in;
+    border-radius: 1rem;
+    padding: 1rem;
 }

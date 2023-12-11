@@ -28,7 +28,7 @@
                 Convert File
             </button>
         </form>
-        <span id="error" class="error hidden"></span>
+        <div id="error" class="error hidden"><button class="btn1" @click="">close</button></div>
         <button id="downloadBtn" class="btn1 hidden">Download File</button>
     </div>
 </template>
