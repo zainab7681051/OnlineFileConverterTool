@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
 
 :root {
-    --errorRed: #c51a1a;
+    --errorRed: #e62f35;
     --bg-color: rgb(20, 20, 20);
     --bg-color-dimmed: rgb(20, 20, 20, 0.8);
     --light: #cbcecf;
@@ -32,12 +32,11 @@ body {
 }
 
 .error {
-    color: var(--errorRed);
+    color: var(--light);
     font-weight: 700;
     font-size: 20px;
     display: flex;
-    border-style: solid;
-    border-color: var(--errorRed);
+    border-style: none;
     height: 8rem;
     flex-direction: column;
     justify-content: space-between;
@@ -48,17 +47,21 @@ body {
     bottom: 50%;
     transition: all 0.3s ease;
     border-radius: 1rem;
-    padding-top: 1.5rem;
-    padding-right: 1rem;
-    padding-left: 1rem;
-    padding-bottom: 0.6rem
+    padding-bottom: 1.5rem;
+    padding-inline-start: 1rem;
+    padding-inline-end: 1rem;
+    padding-top: 0.6rem;
+    margin-left: 10px;
+    margin-right: 10px;
 }
+
 
 .errorHeading {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    color: var(--errorRed)
 }
 
 .errorHeading>* {
@@ -68,4 +71,33 @@ body {
 
 .errorHeading>span.material-symbols-outlined {
     font-size: 45px;
+}
+
+.loading::after {
+    content: "";
+    border: 6px solid var(--light-pur);
+    border-top: 6px solid var(--yellow);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@media (min-width: 767px) {
+    .error {
+        margin-left: 0;
+        margin-right: 0;
+    }
 }

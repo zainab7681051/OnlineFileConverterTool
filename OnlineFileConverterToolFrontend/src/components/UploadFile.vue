@@ -10,26 +10,37 @@
             <div v-if="selectedFile" id="file-info" class="file-info">
                 <p>{{ selectedFile.name }}</p>
                 <p>{{ formatFileSize(selectedFile.size) }}</p>
-                <p id="FileLimit" :class="FileSizeExceedsLimit ? 'shown error' : 'hidden'">FILE SIZE EXCEEDS LIMIT!!!</p>
+                <div :class="FileSizeExceedsLimit ? 'shown FileLimitError' : 'hidden'">
+                    <span class="material-symbols-outlined">warning</span>
+                    <span>FILE SIZE EXCEEDS LIMIT!!!</span>
+                </div>
             </div>
-            <div class="searchable-select">
-                <label for="searchSelect">Choose Format:</label>
-                <input v-model="searchQuery" @input="filterOptions" type="text" id="searchSelect"
-                    placeholder="Search or select a format" autocomplete="off" />
+            <div class="section">
+                <div class="searchable-select">
+                    <label for="searchSelect">Choose Format:</label>
+                    <input v-model="searchQuery" @input="filterOptions" type="text" id="searchSelect"
+                        placeholder="Search or select a format" autocomplete="off" />
 
-                <select v-model="selectedFormat" id="selectOptions">
-                    <option>{{ nullVal }}</option>
-                    <option v-for="(format, index) in filteredOptions" :key="index" :value="format">{{ format }}</option>
-                </select>
+                    <select v-model="selectedFormat" id="selectOptions">
+                        <option>{{ nullVal }}</option>
+                        <option v-for="(format, index) in filteredOptions" :key="index" :value="format">{{ format }}
+                        </option>
+                    </select>
+                </div>
+                <div class="buttons">
+                    <button id="convertBtn" class="btn1" type="submit"
+                        :disabled="(!selectedFile || !selectedFormat) || FileSizeExceedsLimit" @click="uploadFile">
+                        Convert
+                        <span class="material-symbols-outlined">
+                            autorenew
+                        </span>
+                    </button>
 
+                    <button id="downloadBtn" class="btn1 hidden">Download<span class="material-symbols-outlined">
+                            download
+                        </span></button>
+                </div>
             </div>
-            <button id="convertBtn" class="btn1" type="submit"
-                :disabled="(!selectedFile || !selectedFormat) || FileSizeExceedsLimit" @click="uploadFile">
-                Convert File
-                <span class="material-symbols-outlined">
-                    autorenew
-                </span>
-            </button>
         </form>
         <div id="error" class="error hidden">
             <div class="errorHeading">
@@ -41,9 +52,6 @@
             <span id="errorText"></span>
             <button class="btn1" @click="">close</button>
         </div>
-        <button id="downloadBtn" class="btn1 hidden">Download File <span class="material-symbols-outlined">
-                download
-            </span></button>
     </div>
 </template>
 
@@ -120,7 +128,10 @@ export default {
             const ErrorBox = document.getElementById("error");
             const errorText = document.getElementById("errorText");
             const dialogButton = ErrorBox.querySelector('button') as HTMLButtonElement;
-            if (this.selectedFile) {
+            if (this.selectedFile && !this.FileSizeExceedsLimit) {
+                convertBtn.disabled = true;
+                convertBtn.innerHTML = "";
+                convertBtn.innerHTML = 'Loading<span class="loading"></span>';
                 let f: File = this.selectedFile;
                 const fileExt = (filename: string): string => {
                     const parts: string[] = filename.split('.');
@@ -146,13 +157,13 @@ export default {
                 let to: string = this.selectedFormat;
                 let res: response = await Convert(f, from, to) || { ok: false, status: 503, json: () => { } };
                 this.result = res.status != 503 ? await res.json() : { error: { message: "Failed to fetch. Possible network failure" } };
+                convertBtn.innerHTML = "Convert <span class=\"material-symbols-outlined\">autorenew</span>";
                 if (!res.ok) {
                     console.error('Error uploading file:', this.result.error);
                     document.body.style.backgroundColor = "var(--bg-color-dimmed)";
                     ErrorBox.classList.remove("hidden");
                     ErrorBox.classList.add("shown")
                     errorText.innerText = `Error Code ${res.status} : ${this.result.error.message}`;
-                    convertBtn.disabled = true;
                     dialogButton.addEventListener("click", () => {
                         ErrorBox.classList.remove("shown")
                         ErrorBox.classList.add("hidden");
@@ -162,6 +173,7 @@ export default {
                     })
 
                 } else {
+                    if (convertBtn.disabled === true) { convertBtn.disabled = false; }
                     downloadBtn.classList.remove("hidden");
                     downloadBtn.classList.add("shown");
                     downloadBtn.addEventListener('click', () => {
