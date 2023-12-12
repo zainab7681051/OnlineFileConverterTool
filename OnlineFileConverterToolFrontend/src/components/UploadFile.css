@@ -18,7 +18,7 @@ form {
     align-items: center;
     cursor: pointer;
     padding: 10px;
-    border: 2px dashed var(--light);
+    border: 2px dashed var(--light-pur);
     border-radius: 5px;
     transition: all 0.3s ease-in-out;
 }
@@ -32,7 +32,7 @@ form {
     margin-top: .2rem;
     text-align: center;
     font-size: 18px;
-    color: var(--yellow);
+    color: var(--light);
 }
 
 .section {
@@ -46,6 +46,7 @@ input#fileInput {
 }
 
 .btn1 {
+    font-family: 'Overpass Mono', monospace;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -57,7 +58,7 @@ input#fileInput {
     padding: .4rem;
     border-style: solid;
     border-width: .5px;
-    border-color: var(--light);
+    border-color: var(--light-pur);
     background-color: var(--sec-bg-color);
     color: var(--yellow);
     transition: all 0.3s ease-in-out;
@@ -92,6 +93,7 @@ input#fileInput {
 }
 
 #searchSelect {
+    font-family: 'Overpass Mono', monospace;
     color: var(--yellow);
     margin: .5rem;
     background-color: var(--bg-color);
@@ -107,6 +109,7 @@ input#fileInput {
 }
 
 #searchSelect:focus-visible {
+    font-family: 'Overpass Mono', monospace;
     border-bottom-style: 4px;
     border-bottom-color: var(--yellow);
 }

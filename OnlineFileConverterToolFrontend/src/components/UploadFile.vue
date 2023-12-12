@@ -9,7 +9,8 @@
 
             <div v-if="selectedFile" id="file-info" class="file-info">
                 <p>{{ selectedFile.name }}</p>
-                <p>{{ formatFileSize(selectedFile.size) }}</p>
+                <p :style="FileSizeExceedsLimit ? 'color:var(--errorRed)' : 'color:var(--yellow)'">{{
+                    formatFileSize(selectedFile.size) }}</p>
                 <div :class="FileSizeExceedsLimit ? 'shown FileLimitError' : 'hidden'">
                     <span class="material-symbols-outlined">warning</span>
                     <span>FILE SIZE EXCEEDS LIMIT!!!</span>
@@ -19,7 +20,7 @@
                 <div class="searchable-select">
                     <label for="searchSelect">Choose Format:</label>
                     <input v-model="searchQuery" @input="filterOptions" type="text" id="searchSelect"
-                        placeholder="Search or select a format" autocomplete="off" />
+                        placeholder="search a format" autocomplete="off" />
 
                     <select v-model="selectedFormat" id="selectOptions">
                         <option>{{ nullVal }}</option>
@@ -42,6 +43,7 @@
                 </div>
             </div>
         </form>
+        <div id="overlay" class="overlay hidden"></div>
         <div id="error" class="error hidden">
             <div class="errorHeading">
                 <span class="material-symbols-outlined">
@@ -126,12 +128,14 @@ export default {
             const convertBtn = document.getElementById("convertBtn") as HTMLButtonElement;
             const downloadBtn = document.getElementById("downloadBtn") as HTMLButtonElement;
             const ErrorBox = document.getElementById("error");
+            const overlay = document.getElementById('overlay');
             const errorText = document.getElementById("errorText");
             const dialogButton = ErrorBox.querySelector('button') as HTMLButtonElement;
+            const loadingSpinner = '<span class="loading"></span>'
             if (this.selectedFile && !this.FileSizeExceedsLimit) {
                 convertBtn.disabled = true;
                 convertBtn.innerHTML = "";
-                convertBtn.innerHTML = 'Loading<span class="loading"></span>';
+                convertBtn.innerHTML = loadingSpinner;
                 let f: File = this.selectedFile;
                 const fileExt = (filename: string): string => {
                     const parts: string[] = filename.split('.');
@@ -160,15 +164,17 @@ export default {
                 convertBtn.innerHTML = "Convert <span class=\"material-symbols-outlined\">autorenew</span>";
                 if (!res.ok) {
                     console.error('Error uploading file:', this.result.error);
-                    document.body.style.backgroundColor = "var(--bg-color-dimmed)";
+                    overlay.classList.remove('hidden');
+                    overlay.classList.add('shown');
                     ErrorBox.classList.remove("hidden");
                     ErrorBox.classList.add("shown")
                     errorText.innerText = `Error Code ${res.status} : ${this.result.error.message}`;
                     dialogButton.addEventListener("click", () => {
                         ErrorBox.classList.remove("shown")
                         ErrorBox.classList.add("hidden");
+                        overlay.classList.remove('shown');
+                        overlay.classList.add('hidden');
                         errorText.innerText = "";
-                        document.body.style.backgroundColor = "var(--bg-color)";
                         convertBtn.disabled = false;
                     })
 
@@ -177,8 +183,13 @@ export default {
                     downloadBtn.classList.remove("hidden");
                     downloadBtn.classList.add("shown");
                     downloadBtn.addEventListener('click', () => {
+                        downloadBtn.disabled = true;
+                        downloadBtn.innerHTML = "";
+                        downloadBtn.innerHTML = loadingSpinner;
                         window.open(this.result.url, '_blank')
                     });
+                    downloadBtn.disabled = false;
+                    downloadBtn.innerHTML = "Download <span class=\"material-symbols-outlined\">download</span>";
                 }
             }
         },

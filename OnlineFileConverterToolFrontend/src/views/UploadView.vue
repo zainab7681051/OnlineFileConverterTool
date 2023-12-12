@@ -24,4 +24,9 @@ export default {
 .heading>* {
     margin-block-end: .1em;
 }
+
+.heading>h1 {
+    font-family: 'Rubik Mono One', monospace;
+    color: var(--yellow)
+}
 </style>
