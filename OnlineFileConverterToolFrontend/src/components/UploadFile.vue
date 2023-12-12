@@ -28,7 +28,8 @@
                 Convert File
             </button>
         </form>
-        <div id="error" class="error hidden"><button class="btn1" @click="">close</button></div>
+        <div id="error" class="error hidden"><span id="errorText"></span><button class="btn1" @click="">close</button>
+        </div>
         <button id="downloadBtn" class="btn1 hidden">Download File</button>
     </div>
 </template>
@@ -103,7 +104,9 @@ export default {
         async uploadFile() {
             const convertBtn = document.getElementById("convertBtn");
             const downloadBtn = document.getElementById("downloadBtn");
-            const errorMessage = document.getElementById("error");
+            const ErrorBox = document.getElementById("error");
+            const errorText = document.getElementById("errorText");
+            const dialogButton = ErrorBox.querySelector('button');
             if (this.selectedFile) {
                 let f: File = this.selectedFile;
                 const fileExt = (filename: string): string => {
@@ -132,12 +135,18 @@ export default {
                 this.result = res.status != 900 ? await res.json() : { error: { message: "Failed to fetch. Possible network failure" } };
                 if (!res.ok) {
                     console.error('Error uploading file:', this.result.error);
-                    errorMessage.classList.remove("hidden");
-                    errorMessage.classList.add("shown")
-                    errorMessage.innerText = `Error Code ${res.status} : ${this.result.error.message}`;
+                    ErrorBox.classList.remove("hidden");
+                    ErrorBox.classList.add("shown")
+                    errorText.innerText = `Error Code ${res.status} : ${this.result.error.message}`;
+                    dialogButton.addEventListener("click", () => {
+                        ErrorBox.classList.remove("shown")
+                        ErrorBox.classList.add("hidden");
+                        errorText.innerText = "";
+                    })
+
                 } else {
-                    errorMessage.classList.remove("shown")
-                    errorMessage.classList.add("hidden");
+                    ErrorBox.classList.remove("shown")
+                    ErrorBox.classList.add("hidden");
                     downloadBtn.classList.remove("hidden");
                     downloadBtn.classList.add("shown");
                     downloadBtn.addEventListener('click', () => {

@@ -3,17 +3,17 @@
 :root {
     --errorRed: #c51a1a;
     --border-color: #9c94ad;
-    --bg-color: #011c2e;
-    --light-yellow:#ffebb8;
-    --yellow:#f5c600;
-    --light-blue:#9ab7cb;
-    --sec-bg-color:#053b61;
+    --bg-color: #141414;
+    --light: #cbcecf;
+    --yellow: #f9c712;
+    --blue: #003bf7;
+    --sec-bg-color: #18191a;
 }
 
 body {
     font-family: 'Lato', sans-serif;
     background-color: var(--bg-color);
-    color: var(--light-yellow);
+    color: var(--light);
 }
 
 #app {
@@ -37,14 +37,17 @@ body {
     border-style: solid;
     border-color: var(--errorRed);
     height: 8rem;
-    flex-wrap: wrap;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
     position: absolute;
-    background-color: var(--light-blue);
-    top: 51%;
-    left: 31%;
+    background-color: var(--sec-bg-color);
+    top: 50%;
+    bottom: 50%;
     transition: all 0.5s ease-in;
     border-radius: 1rem;
-    padding: 1rem;
+    padding-top: 1.5rem;
+    padding-right: 1rem;
+    padding-left: 1rem;
+    padding-bottom: 0.6rem
 }

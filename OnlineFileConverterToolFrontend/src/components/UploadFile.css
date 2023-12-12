@@ -18,7 +18,7 @@ form {
     align-items: center;
     cursor: pointer;
     padding: 10px;
-    border: 2px dashed #ccc;
+    border: 2px dashed var(--light);
     border-radius: 5px;
     transition: all 0.3s ease-in-out;
 }
@@ -29,10 +29,11 @@ form {
 }
 
 .file-info {
-    margin-top: 10px;
+    margin-top: .2rem;
+    margin-bottom: -2rem;
     text-align: center;
     font-size: 18px;
-    color:var(--yellow);
+    color: var(--yellow);
 }
 
 input#fileInput {
@@ -44,12 +45,20 @@ input#fileInput {
     width: 150px;
     font-size: 19px;
     border-radius: 8px;
-    padding: .3rem;
-    height: 35px;
-    border-style: none;
+    padding: .4rem;
+    border-style: solid;
+    border-width: .5px;
+    border-color: var(--light);
     background-color: var(--sec-bg-color);
-    color:var(--yellow);
+    color: var(--yellow);
     transition: all 0.3s ease-in-out;
+}
+
+.btn1:disabled {
+    color: var(--light);
+    background-color: #424242;
+    border-color: transparent;
+
 }
 
 .btn1:not(:disabled) {
@@ -58,14 +67,15 @@ input#fileInput {
 
 .btn1:hover:not(:disabled) {
     background-color: var(--yellow);
-    color:var(--sec-bg-color);
+    color: var(--sec-bg-color);
+    border-color: var(--yellow);
 }
 
 .searchable-select {
     display: flex;
     align-items: center;
     flex-direction: column;
-    margin-top: 1rem;
+    margin-top: .2rem;
 }
 
 .searchable-select label {
