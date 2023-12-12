@@ -2,7 +2,8 @@
     <div class="upload-file">
         <form @submit.prevent="uploadFile">
             <label for="fileInput" class="file-label">
-                <span>Choose a file</span>
+                <span style="margin-bottom:.5rem">Choose a file </span>
+                <span class="material-symbols-outlined">upload</span>
                 <input type="file" id="fileInput" ref="fileInput" @change="handleFileChange" />
             </label>
 
@@ -13,7 +14,6 @@
             </div>
             <div class="searchable-select">
                 <label for="searchSelect">Choose Format:</label>
-
                 <input v-model="searchQuery" @input="filterOptions" type="text" id="searchSelect"
                     placeholder="Search or select a format" autocomplete="off" />
 
@@ -26,11 +26,24 @@
             <button id="convertBtn" class="btn1" type="submit"
                 :disabled="(!selectedFile || !selectedFormat) || FileSizeExceedsLimit" @click="uploadFile">
                 Convert File
+                <span class="material-symbols-outlined">
+                    autorenew
+                </span>
             </button>
         </form>
-        <div id="error" class="error hidden"><span id="errorText"></span><button class="btn1" @click="">close</button>
+        <div id="error" class="error hidden">
+            <div class="errorHeading">
+                <span class="material-symbols-outlined">
+                    release_alert
+                </span>
+                <span> Error!</span>
+            </div>
+            <span id="errorText"></span>
+            <button class="btn1" @click="">close</button>
         </div>
-        <button id="downloadBtn" class="btn1 hidden">Download File</button>
+        <button id="downloadBtn" class="btn1 hidden">Download File <span class="material-symbols-outlined">
+                download
+            </span></button>
     </div>
 </template>
 
@@ -102,11 +115,11 @@ export default {
             return `${finalSize} ${units[index]}`;
         },
         async uploadFile() {
-            const convertBtn = document.getElementById("convertBtn");
-            const downloadBtn = document.getElementById("downloadBtn");
+            const convertBtn = document.getElementById("convertBtn") as HTMLButtonElement;
+            const downloadBtn = document.getElementById("downloadBtn") as HTMLButtonElement;
             const ErrorBox = document.getElementById("error");
             const errorText = document.getElementById("errorText");
-            const dialogButton = ErrorBox.querySelector('button');
+            const dialogButton = ErrorBox.querySelector('button') as HTMLButtonElement;
             if (this.selectedFile) {
                 let f: File = this.selectedFile;
                 const fileExt = (filename: string): string => {
@@ -131,22 +144,24 @@ export default {
                 }
                 let from: string = fileExt(f.name).toString();
                 let to: string = this.selectedFormat;
-                let res: response = await Convert(f, from, to) || { ok: false, status: 900, json: () => { } };
-                this.result = res.status != 900 ? await res.json() : { error: { message: "Failed to fetch. Possible network failure" } };
+                let res: response = await Convert(f, from, to) || { ok: false, status: 503, json: () => { } };
+                this.result = res.status != 503 ? await res.json() : { error: { message: "Failed to fetch. Possible network failure" } };
                 if (!res.ok) {
                     console.error('Error uploading file:', this.result.error);
+                    document.body.style.backgroundColor = "var(--bg-color-dimmed)";
                     ErrorBox.classList.remove("hidden");
                     ErrorBox.classList.add("shown")
                     errorText.innerText = `Error Code ${res.status} : ${this.result.error.message}`;
+                    convertBtn.disabled = true;
                     dialogButton.addEventListener("click", () => {
                         ErrorBox.classList.remove("shown")
                         ErrorBox.classList.add("hidden");
                         errorText.innerText = "";
+                        document.body.style.backgroundColor = "var(--bg-color)";
+                        convertBtn.disabled = false;
                     })
 
                 } else {
-                    ErrorBox.classList.remove("shown")
-                    ErrorBox.classList.add("hidden");
                     downloadBtn.classList.remove("hidden");
                     downloadBtn.classList.add("shown");
                     downloadBtn.addEventListener('click', () => {

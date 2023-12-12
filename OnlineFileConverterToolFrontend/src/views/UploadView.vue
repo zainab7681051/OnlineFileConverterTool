@@ -1,6 +1,9 @@
 <template>
-    <h1>Upload a file here.</h1>
-    <h2>max size: 50 MB</h2>
+    <div class="heading">
+        <h1>File Converter Tool</h1>
+        <h2>Upload a file here.</h2>
+        <h3>max size: <span style="color: var(--errorRed);">50 MB</span></h3>
+    </div>
     <UploadFile />
 </template>
 
@@ -11,13 +14,14 @@ export default {
     components: { UploadFile }
 }
 </script>
-    
 <style scoped>
-h1 {
-    align-self: center;
+.heading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-h2 {
-    align-self: center;
+.heading>* {
+    margin-block-end: .1em;
 }
 </style>

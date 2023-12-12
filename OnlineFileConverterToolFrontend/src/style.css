@@ -2,18 +2,20 @@
 
 :root {
     --errorRed: #c51a1a;
-    --border-color: #9c94ad;
-    --bg-color: #141414;
+    --bg-color: rgb(20, 20, 20);
+    --bg-color-dimmed: rgb(20, 20, 20, 0.8);
     --light: #cbcecf;
     --yellow: #f9c712;
     --blue: #003bf7;
     --sec-bg-color: #18191a;
+    --light-pur: #9c94ad;
 }
 
 body {
     font-family: 'Lato', sans-serif;
     background-color: var(--bg-color);
     color: var(--light);
+    transition: background-color .3s ease;
 }
 
 #app {
@@ -44,10 +46,26 @@ body {
     background-color: var(--sec-bg-color);
     top: 50%;
     bottom: 50%;
-    transition: all 0.5s ease-in;
+    transition: all 0.3s ease;
     border-radius: 1rem;
     padding-top: 1.5rem;
     padding-right: 1rem;
     padding-left: 1rem;
     padding-bottom: 0.6rem
+}
+
+.errorHeading {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.errorHeading>* {
+    font-size: 35px;
+    margin: .5rem
+}
+
+.errorHeading>span.material-symbols-outlined {
+    font-size: 45px;
 }
