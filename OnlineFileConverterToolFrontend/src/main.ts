@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+createApp(App).mount('#app')
 const firebaseConfig = {
     apiKey: "AIzaSyCTrBFb1oinToeRzWdjcCTmrTmmXtqzRVg",
     authDomain: "fileconvertertool.firebaseapp.com",
@@ -16,4 +17,3 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
-createApp(App).mount('#app')
