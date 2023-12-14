@@ -23,7 +23,7 @@ public class ConverterController : ControllerBase
     {
         _logger = logger;
         //generate API key for cloud convert here: https://cloudconvert.com/dashboard/api/v2/keys
-        _cloudConvert = new CloudConvertAPI(FileExtensions.key);
+        _cloudConvert = new CloudConvertAPI(EnvVariables.ApiKey);
     }
 
     [HttpPost]
@@ -160,8 +160,13 @@ public class ConverterController : ControllerBase
             throw new Exception(e.Message);
         }
     }
-}
 
+    [HttpGet(Name = "check")]
+    public IActionResult HealthCheck()
+    {
+        return Ok("server is alive.");
+    }
+}
 class MyFile
 {
     public string FileName { get; set; }

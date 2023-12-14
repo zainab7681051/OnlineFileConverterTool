@@ -1,3 +1,5 @@
+using OnlineFileConverterToolBackend;
+
 var builder = WebApplication.CreateBuilder(args);
 var AllowSpecificOrigin = "_allowSpecificOrigin";
 // Add services to the container.
@@ -11,7 +13,7 @@ builder.Services.AddCors(options =>
             options.AddPolicy(name: AllowSpecificOrigin, builder =>
             {
                 builder
-                    .WithOrigins("http://localhost:5173")
+                    .WithOrigins(EnvVariables.Origin)
                     .AllowAnyHeader()
                     .WithMethods("POST");
             });
