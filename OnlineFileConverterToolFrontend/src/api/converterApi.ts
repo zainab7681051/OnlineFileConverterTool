@@ -3,6 +3,7 @@ const tag: string = "Upload";
 
 export async function Convert(file: File, fromFormat: string, toFormat: string): Promise<Response | null> {
     try {
+        console.log(baseUrl)
         const formData = new FormData();
         formData.append('file', file)
 
@@ -13,7 +14,8 @@ export async function Convert(file: File, fromFormat: string, toFormat: string):
         };
         const param = "from=" + fromFormat + "&to=" + toFormat;
         const url = baseUrl + '/' + tag + '?' + param;
-        return await fetch(url, requestOptions);
+        const res = await fetch(url, requestOptions);
+        return res;
     } catch (error) {
         return null;
     }
