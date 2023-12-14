@@ -15,7 +15,6 @@ export async function Convert(file: File, fromFormat: string, toFormat: string):
         const url = baseUrl + '/' + tag + '?' + param;
         return await fetch(url, requestOptions);
     } catch (error) {
-        console.error(error);
         return null;
     }
 };
