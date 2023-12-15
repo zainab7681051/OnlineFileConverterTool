@@ -180,18 +180,21 @@ export default {
 
                 } else {
                     if (convertBtn.disabled === true) { convertBtn.disabled = false; }
-                    downloadBtn.classList.remove("hidden");
-                    downloadBtn.classList.add("shown");
-                    downloadBtn.addEventListener('click', () => {
-                        downloadBtn.disabled = true;
-                        downloadBtn.innerHTML = "";
-                        downloadBtn.innerHTML = loadingSpinner;
-                        window.open(this.result.url, '_blank')
-                        downloadBtn.disabled = false;
-                        downloadBtn.innerHTML = "Download <span class=\"material-symbols-outlined\">download</span>";
-                    });
+                    this.download(this.result.url, downloadBtn, loadingSpinner);
                 }
             }
+        },
+        download(url: string, downloadBtn: HTMLButtonElement, loadingSpinner: string) {
+            downloadBtn.classList.remove("hidden");
+            downloadBtn.classList.add("shown");
+            downloadBtn.disabled = true;
+            downloadBtn.innerHTML = "";
+            downloadBtn.innerHTML = loadingSpinner;
+            window.open(url, '_blank')
+            downloadBtn.disabled = false;
+            downloadBtn.innerHTML = "Download <span class=\"material-symbols-outlined\">download</span>";
+            downloadBtn.classList.remove("shown");
+            downloadBtn.classList.add("hidden");
         },
         filterOptions() {
             this.selectedFormat = this.searchQuery ? this.FilteredFormats[0] : this.nullVal;
