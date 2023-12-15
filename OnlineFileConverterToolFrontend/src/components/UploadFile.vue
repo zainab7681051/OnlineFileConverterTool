@@ -37,7 +37,8 @@
                         </span>
                     </button>
 
-                    <button id="downloadBtn" class="btn1 hidden">Download<span class="material-symbols-outlined">
+                    <button id="downloadBtn" class="btn1 hidden" @click="download">Download<span
+                            class="material-symbols-outlined">
                             download
                         </span></button>
                 </div>
@@ -180,17 +181,20 @@ export default {
 
                 } else {
                     if (convertBtn.disabled === true) { convertBtn.disabled = false; }
-                    this.download(this.result.url, downloadBtn, loadingSpinner);
+                    downloadBtn.classList.remove("hidden");
+                    downloadBtn.classList.add("shown");
                 }
             }
         },
-        download(url: string, downloadBtn: HTMLButtonElement, loadingSpinner: string) {
-            downloadBtn.classList.remove("hidden");
-            downloadBtn.classList.add("shown");
+        download() {
+            const downloadBtn = document.getElementById("downloadBtn") as HTMLButtonElement;
+            const loadingSpinner = '<span class="loading"></span>'
             downloadBtn.disabled = true;
             downloadBtn.innerHTML = "";
             downloadBtn.innerHTML = loadingSpinner;
-            window.open(url, '_blank')
+            if (this.result) {
+                window.open(this.result.url, '_blank')
+            }
             downloadBtn.disabled = false;
             downloadBtn.innerHTML = "Download <span class=\"material-symbols-outlined\">download</span>";
             downloadBtn.classList.remove("shown");
