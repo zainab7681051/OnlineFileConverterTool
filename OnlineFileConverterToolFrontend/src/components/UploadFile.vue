@@ -181,8 +181,8 @@ export default {
 
                 } else {
                     if (convertBtn.disabled === true) { convertBtn.disabled = false; }
-                    downloadBtn.classList.remove("hidden");
-                    downloadBtn.classList.add("shown");
+                    downloadBtn.classList.remove("shown");
+                    downloadBtn.classList.add("hidden");
                 }
             }
         },
