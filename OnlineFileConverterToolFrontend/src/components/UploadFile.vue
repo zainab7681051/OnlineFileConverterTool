@@ -187,9 +187,9 @@ export default {
                         downloadBtn.innerHTML = "";
                         downloadBtn.innerHTML = loadingSpinner;
                         window.open(this.result.url, '_blank')
+                        downloadBtn.disabled = false;
+                        downloadBtn.innerHTML = "Download <span class=\"material-symbols-outlined\">download</span>";
                     });
-                    downloadBtn.disabled = false;
-                    downloadBtn.innerHTML = "Download <span class=\"material-symbols-outlined\">download</span>";
                 }
             }
         },
