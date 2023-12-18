@@ -37,7 +37,7 @@
                         </span>
                     </button>
 
-                    <button id="downloadBtn" class="btn1 hidden" @click="download">Download<span
+                    <button id="downloadBtn" :class="dl ? 'btn1 shown' : 'hidden'" @click="download">Download<span
                             class="material-symbols-outlined">
                             download
                         </span></button>
@@ -76,7 +76,8 @@ export default {
             supportedFormats: allFormats as string[],
             searchQuery: "" as string,
             FilteredFormats: null as string[],
-            nullVal: null as null
+            nullVal: null as null,
+            dl: false as boolean
         };
     },
     components: {},
@@ -96,6 +97,7 @@ export default {
 
             if (file) {
                 this.selectedFile = file;
+                this.dl = false;
             }
         },
 
@@ -134,6 +136,7 @@ export default {
             const dialogButton = ErrorBox.querySelector('button') as HTMLButtonElement;
             const loadingSpinner = '<span class="loading"></span>'
             if (this.selectedFile && !this.FileSizeExceedsLimit) {
+                this.dl = false;
                 convertBtn.disabled = true;
                 convertBtn.innerHTML = "";
                 convertBtn.innerHTML = loadingSpinner;
@@ -181,8 +184,7 @@ export default {
 
                 } else {
                     if (convertBtn.disabled === true) { convertBtn.disabled = false; }
-                    downloadBtn.classList.add("shown");
-                    downloadBtn.classList.remove("hidden");
+                    this.dl = true;
                 }
             }
         },
@@ -197,11 +199,11 @@ export default {
             }
             downloadBtn.disabled = false;
             downloadBtn.innerHTML = "Download <span class=\"material-symbols-outlined\">download</span>";
-            downloadBtn.classList.remove("shown");
-            downloadBtn.classList.add("hidden");
+            this.dl = false
         },
         filterOptions() {
             this.selectedFormat = this.searchQuery ? this.FilteredFormats[0] : this.nullVal;
+            this.dl = false
         }
     },
 
