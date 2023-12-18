@@ -199,7 +199,6 @@ export default {
             }
             downloadBtn.disabled = false;
             downloadBtn.innerHTML = "Download <span class=\"material-symbols-outlined\">download</span>";
-            this.dl = false
         },
         filterOptions() {
             this.selectedFormat = this.searchQuery ? this.FilteredFormats[0] : this.nullVal;
