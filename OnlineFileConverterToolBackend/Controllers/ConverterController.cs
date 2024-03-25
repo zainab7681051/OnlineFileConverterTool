@@ -10,6 +10,12 @@ using OnlineFileConverterToolBackend;
 
 namespace OnlineFileConverterToolBackend.Controllers;
 
+class MyFile
+{
+    public string FileName { get; set; }
+    public Uri Url { get; set; }
+}
+
 [ApiController]
 [Route("api/v1/[controller]/[action]")]
 public class ConverterController : ControllerBase
@@ -75,7 +81,7 @@ public class ConverterController : ControllerBase
 
             //get upload specific task
             var uploadTask = job.Data.Tasks.FirstOrDefault(t => t.Name == "upload_my_file");
-            if (uploadTask is null) throw new NullReferenceException();
+            // if (uploadTask is null) throw new NullReferenceException();
 
             //upload file as byte array 
             await _cloudConvert.UploadAsync(uploadTask.Result.Form.Url.ToString(), fileBytes, fileName, uploadTask.Result.Form.Parameters);
@@ -104,17 +110,10 @@ public class ConverterController : ControllerBase
     /// <exception cref="NullReferenceException">Thrown if the necessary information is not found in the CloudConvert job response.</exception>
     private async Task<CloudConvert.API.Models.TaskModels.TaskResultFile> ExportFile(Response<JobResponse> job)
     {
-        try
-        {
             var job2 = await _cloudConvert.WaitJobAsync(job.Data.Id);
-            var exportTask = job2.Data.Tasks.FirstOrDefault() ?? throw new NullReferenceException();
-            var file = exportTask.Result.Files.FirstOrDefault() ?? throw new NullReferenceException();
+            var exportTask = job2.Data.Tasks.FirstOrDefault();
+            var file = exportTask.Result.Files.FirstOrDefault();
             return file;
-        }
-        catch (Exception e)
-        {
-            throw new Exception(e.Message);
-        }
     }
 
     /// <summary>
@@ -133,32 +132,25 @@ public class ConverterController : ControllerBase
     /// </remarks>
     private async Task<Response<JobResponse>> CreateJob(string Input_Format, string Output_Format)
     {
-        try
+        return await _cloudConvert.CreateJobAsync(new JobCreateRequest
         {
-            return await _cloudConvert.CreateJobAsync(new JobCreateRequest
+            Tasks = new
             {
-                Tasks = new
+                upload_my_file = new ImportUploadCreateRequest(),
+                convert = new ConvertCreateRequest
                 {
-                    upload_my_file = new ImportUploadCreateRequest(),
-                    convert = new ConvertCreateRequest
-                    {
-                        Input = "upload_my_file",
-                        Input_Format = Input_Format,
-                        Output_Format = Output_Format
-                    },
-                    export = new ExportUrlCreateRequest
-                    {
-                        Input = "convert",
-                        Archive_Multiple_Files = true
-                    }
+                    Input = "upload_my_file",
+                    Input_Format = Input_Format,
+                    Output_Format = Output_Format
                 },
-                Tag = "Test"
-            });
-        }
-        catch (Exception e)
-        {
-            throw new Exception(e.Message);
-        }
+                export = new ExportUrlCreateRequest
+                {
+                    Input = "convert",
+                    Archive_Multiple_Files = true
+                }
+            },
+            Tag = "Test"
+        });
     }
 
     [HttpGet(Name = "check")]
@@ -166,9 +158,4 @@ public class ConverterController : ControllerBase
     {
         return Ok("server is alive.");
     }
-}
-class MyFile
-{
-    public string FileName { get; set; }
-    public Uri Url { get; set; }
 }
